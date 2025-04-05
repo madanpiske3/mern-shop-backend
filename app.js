@@ -6,6 +6,8 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import Product from './models/product.js';
+// import router from './routers/products.js';
+import productRoutes from './routers/products.js';
 // We need to create a model with mongodb
 // in monogdb, it called collecction
 // & in node js its callled model => schema (mongoose schema)
@@ -23,6 +25,23 @@ const api = process.env.API_URL;
 app.use(express.json()); // Middleware to parse JSON request body bodyParser got deprecated
 app.use(morgan('tiny'));
 
+app.use(`${api}/products`, productRoutes);
+
+// app.get(`${}/products`, productRoutes);
+
+
+
+mongoose.connect(process.env.CONNECTION_STRING).then(() => {
+    console.log('Database Connection is ready...');
+}).catch((err) => {
+    console.log(err);
+});
+
+app.listen(PORT, () => console.log('localhost:5k'));
+
+
+
+
 // models/product.js
 // const productSchema = mongoose.Schema({
 //     name: String,
@@ -37,10 +56,10 @@ app.use(morgan('tiny'));
 // const Product = mongoose.model('Product', productSchema); // Product is the model name, productSchema is the schema name & normally Models starts with the capital letters
 
 
-app.get(`${api}`, (_, res) => {
-    res.send('Hello World!');
-    console.log(process.env.API_URL);
-});
+// app.get(`${api}`, (_, res) => {
+//     res.send('Hello World!');
+//     console.log(process.env.API_URL);
+// });
 // app.get(`${api}/products`,async (_, res) => {
 //     const productList = await Product.find();
 //     res.send(productList);
@@ -58,42 +77,14 @@ app.get(`${api}`, (_, res) => {
 //     res.status(500).send("Error fetching products");
 //   });
 // })
-app.get(`${api}/products`, async (_, res) => {
-    const productList = await Product.find();
-    if(!productList) return res.status(404).send('Product not found');
+// app.get(`${api}/products`, async (_, res) => {
+//     const productList = await Product.find();
+//     if(!productList) return res.status(404).send('Product not found');
 
-    res.send(productList);
-    // console.log(productList);
-    console.log('Products available');
-})
-
-app.post(`${api}/products`, (req, res) => {
-    const product = new Product({
-        name: req.body.name,
-        image: req.body.image,
-        countInStock: req.body.countInStock,
-        price: req.body.price,
-    });
-    // if (!product) {    //     return res.status(400).send('Product not found');    // }
-    product.save()
-        .then((savedProduct) => {
-            res.send(savedProduct); // Send the response only once
-        })
-        .catch((err) => {
-            res.status(500).json({ error: err, success: false, message: err.message });
-        });
-});
-
-mongoose.connect(process.env.CONNECTION_STRING).then(() => {
-    console.log('Database Connection is ready...');
-}).catch((err) => {
-    console.log(err);
-});
-
-app.listen(PORT, () => console.log('localhost:5k'));
-
-
-
+//     res.send(productList);
+//     // console.log(productList);
+//     console.log('Products available');
+// })
 
 
 // if (!api) {
