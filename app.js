@@ -4,31 +4,63 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import cors from 'cors';
+// import Product from './models/product.js';
+import authJwt from './helpers/jwt.js';
 
-import Product from './models/product.js';
-// import router from './routers/products.js';
 import productRoutes from './routers/products.js';
-// We need to create a model with mongodb
-// in monogdb, it called collecction
-// & in node js its callled model => schema (mongoose schema)
+import categoryRoutes from './routers/categories.js';
+import userRoutes from './routers/users.js';
+import orderRoutes from './routers/orders.js';
+
+import errorHandler from './helpers/error-handler.js';
+
+
 const { Schema } = mongoose;
 
-
 const app = express();
+app.use(cors());
+
 const PORT = 5000;
-
 dotenv.config();
-const api = process.env.API_URL;
+// const api = process.env.API_URL;
+const api = process.env.API_URL || '/api/v1';
+// const api = '/api/v1';
 
+// app.use(cors({ origin: '*' })); // Allow all origins (not recommended for production)    
 
+// const x = authJwt();
+// console.log('x', x);    
 // Middleware
 app.use(express.json()); // Middleware to parse JSON request body bodyParser got deprecated
 app.use(morgan('tiny'));
+app.use(bodyParser.json());
+app.use(authJwt()); // Middleware to protect routes
 
+app.use(errorHandler); // Middleware for error handling
+// app.use((err, req, res, next) => {
+//     if (err) {
+//         res.status(500).json({ message: err.message || 'Internal Server Error' });
+//     }})
+
+// Routers
+// app.use('/', (req, res) => res.send('<h1 className="lasi">Hello, World!</h1>'));
 app.use(`${api}/products`, productRoutes);
+app.use(`${api}/categories`, categoryRoutes);
+app.use(`${api}/users`, userRoutes);
+app.use(`${api}/orders`, orderRoutes);
 
-// app.get(`${}/products`, productRoutes);
+// Ensure the `api` variable is correctly defined and does not contain invalid characters
+if (!api || typeof api !== 'string' || !api.startsWith('/')) {
+    console.error('Error: Invalid API_URL in environment variables.');
+    process.exit(1);
+}
 
+// Ensure `api` is defined and valid
+if (!api) {
+    console.error('Error: API_URL is not defined in the environment variables.');
+    process.exit(1);
+}
 
 
 mongoose.connect(process.env.CONNECTION_STRING).then(() => {
@@ -40,7 +72,10 @@ mongoose.connect(process.env.CONNECTION_STRING).then(() => {
 app.listen(PORT, () => console.log('localhost:5k'));
 
 
-
+// import router from './routers/products.js';
+// We need to create a model with mongodb
+// in monogdb, it called collecction
+// & in node js its callled model => schema (mongoose schema)
 
 // models/product.js
 // const productSchema = mongoose.Schema({
