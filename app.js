@@ -15,6 +15,13 @@ import orderRoutes from './routers/orders.js';
 
 import errorHandler from './helpers/error-handler.js';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// import fs from 'fs';
 
 const { Schema } = mongoose;
 
@@ -36,6 +43,16 @@ app.use(express.json()); // Middleware to parse JSON request body bodyParser got
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 app.use(authJwt()); // Middleware to protect routes
+
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
+// const uploadsDir = __dirname + '/public/uploads';
+
+// if (!fs.existsSync(uploadsDir)) {
+//     fs.mkdirSync(uploadsDir, { recursive: true });
+// }
+
+// app.use('/public/uploads', express.static(uploadsDir));
+
 
 app.use(errorHandler); // Middleware for error handling
 // app.use((err, req, res, next) => {

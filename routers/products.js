@@ -1,6 +1,6 @@
 import express from 'express';
 // import mongoose from 'mongoose';
-import { deleteProducts, getCountProducts, getFeaturedProducts, getFeaturedProductsByCount, getProducts, getProductsById, postProducts, updateProducts } from '../controllers/products.js';
+import { deleteProducts, getCountProducts, getFeaturedProducts, getFeaturedProductsByCount, getProducts, getProductsById, postProducts, updateProducts, uploadGalleryImages } from '../controllers/products.js';
 import { get } from 'mongoose';
 
 const router = express.Router()
@@ -10,6 +10,10 @@ const router = express.Router()
 router.get('/:id', getProductsById);
 router.post(`/`, postProducts);
 router.put('/:id', updateProducts);
+
+// // to upload images,
+router.put("/gallery-images/:id", uploadGalleryImages);
+
 router.delete('/:id', deleteProducts);
 
 router.get('/get/count', getCountProducts);
